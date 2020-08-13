@@ -12,8 +12,10 @@ class Checker:
         logging.basicConfig(filename='timetable-checker.log',
                             format='%(asctime)s - %(levelname)s ==> %(message)s',
                             level=logging.INFO)
+        logging.info('Timebale Checker Started')
 
     def check(self, period):
+        logging.info('Checking timetable started')
         webcrawler = Scraper(self.current_directory)
         try:
             webcrawler.login()
@@ -25,9 +27,11 @@ class Checker:
         finally:
             webcrawler.logout()
             webcrawler.browser.close()
+            logging. info('Checking timetable finished')
 
     def parse(self):
-        pass
+        logging.info('Parsing data started')
+        logging.info('Parsing data finished')
 
     def inform(self):
         pass
@@ -36,6 +40,7 @@ class Checker:
 def main():
     timetable_checker = Checker()
     timetable_checker.check(3)
+    logging.info('Timebale Checker Finished\n\n')
 
 
 if __name__ == '__main__':
