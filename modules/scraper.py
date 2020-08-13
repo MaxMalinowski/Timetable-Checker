@@ -13,20 +13,24 @@ from bs4 import BeautifulSoup as bs
 class Scraper(Exception):
 
     browser = None
-    __timeout = 5
+    __dir = None
+    __timeout = None
     __username = None
     __password = None
 
-    def __init__(self):
+    def __init__(self, directory):
         # Start browser
         chrome_options = Options()
         chrome_options.add_argument("--headless")
-        # chrome_options.add_argument("window-size=60,60")
         self.browser = Chrome(options=chrome_options)
         self.browser.implicitly_wait(20)
         self.browser.get('https://www.terminal-mszi.de/LS/LGN/Login')
+        # Set timeout
+        self.__timeout = 5
+        # Set current working directory
+        self.__dir = directory
         # Set username and password
-        with open(str(pathlib.Path().absolute()) + "/data.json") as json_file:
+        with open(self.__dir + ".config/data.json") as json_file:
             data = json.load(json_file)
             self.__username = data["credentials"]["username"]
             self.__password = data["credentials"]["password"]
@@ -74,6 +78,6 @@ class Scraper(Exception):
         element = self.browser.find_element_by_xpath(
             '//*[@id="ctl00_ContentPlaceHolder_Content_ctl00_Body_ec_Body_esb_cbpS_sdrUebersicht_containerBlock_content"]')
         html = bs(element.get_attribute('innerHTML'), features="html.parser").prettify()
-        with open(str(pathlib.Path().absolute()) + "/tmp.html", "w") as html_file:
+        with open(self.__dir + ".config/tmp.html", "w") as html_file:
             html_file.write(html)
         self.__switch_from_iframe()

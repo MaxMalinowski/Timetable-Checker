@@ -129,7 +129,8 @@ dmypy.json
 .pyre/
 
 # Jetbrains stuff
-/.ides
+.idea/
 
-# Data.json
-data.json
+# data stuff
+.config/data.json
+.config/tmp.html
