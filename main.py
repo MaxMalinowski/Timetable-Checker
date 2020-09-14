@@ -2,6 +2,7 @@ import logging
 import pathlib
 
 from modules.scraper import Scraper
+from modules.parser import Parser
 
 
 class Checker:
@@ -31,6 +32,8 @@ class Checker:
 
     def parse(self):
         logging.info('Parsing data started')
+        parser = Parser(self.current_directory)
+        parser.extract_grob()
         logging.info('Parsing data finished')
 
     def inform(self):
@@ -39,7 +42,8 @@ class Checker:
 
 def main():
     timetable_checker = Checker()
-    timetable_checker.check(3)
+    #timetable_checker.check(3)
+    timetable_checker.parse()
     logging.info('Timebale Checker Finished\n\n')
 
 

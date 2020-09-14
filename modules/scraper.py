@@ -21,10 +21,12 @@ class Scraper(Exception):
     def __init__(self, directory):
         # Start browser
         chrome_options = Options()
-        chrome_options.add_argument("--headless")
+        #chrome_options.add_argument("--headless")
+        chrome_options.add_argument('--ignore-ssl-errors=yes')
+        chrome_options.add_argument('--ignore-certificate-errors')
         self.browser = Chrome(options=chrome_options)
         self.browser.implicitly_wait(20)
-        self.browser.get('https://www.terminal-mszi.de/LS/LGN/Login')
+        self.browser.get('https://terminal-mszi.de/LS/-339999550/SIS')
         # Set timeout
         self.__timeout = 5
         # Set current working directory
