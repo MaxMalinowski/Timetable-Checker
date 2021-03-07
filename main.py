@@ -8,6 +8,7 @@ from modules.parser import Parser
 class Checker:
 
     current_directory = str(pathlib.Path().absolute()) + '/'
+    synched_weeks = 4
 
     def __init__(self):
         logging.basicConfig(filename='timetable-checker.log',
@@ -23,6 +24,9 @@ class Checker:
             webcrawler.navigate_to_timetable()
             webcrawler.set_period(period)
             webcrawler.extract_timetable()
+            for _ in range(self.synched_weeks):
+                webcrawler.show_next_period()
+                webcrawler.extract_timetable()
         except Exception as e:
             logging.error("Exception while checking timetable: " + str(e))
         finally:
@@ -34,6 +38,7 @@ class Checker:
         logging.info('Parsing data started')
         parser = Parser(self.current_directory)
         parser.extract_grob()
+        parser.extract_fein()
         logging.info('Parsing data finished')
 
     def inform(self):
@@ -42,7 +47,7 @@ class Checker:
 
 def main():
     timetable_checker = Checker()
-    #timetable_checker.check(3)
+    timetable_checker.check(1)
     timetable_checker.parse()
     logging.info('Timebale Checker Finished\n\n')
 

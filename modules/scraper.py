@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
@@ -37,6 +38,9 @@ class Scraper(Exception):
             self.__username = data["credentials"]["username"]
             self.__password = data["credentials"]["password"]
         logging.info('Successfully initialized Scraper-Object')
+        with open(self.__dir + ".config/tmp.html", "w") as html_file:
+            html_file.write("")
+        logging.info('Successfully cleared tmp.html file')
 
     def __switch_to_iframe(self):
         logging.info('Switching to iframe')
@@ -62,9 +66,9 @@ class Scraper(Exception):
     def login(self):
         self.__click_wrapper('//*[@id="benutzername"]').send_keys(self.__username)
         self.__click_wrapper('//*[@id="passwort"]').send_keys(self.__password)
-        self.__click_wrapper('//*[@id="login"]/button')
+        self.__click_wrapper('//*[@id="login"]/div/button')
         logging.info('Successfully logged in')
-
+        
     def logout(self):
         self.browser.get('https://www.terminal-mszi.de/LS/LGN/Logout')
         logging.info('Successfully logged out')
@@ -76,20 +80,27 @@ class Scraper(Exception):
         logging.info('Successfully reached the timetable view')
 
     def set_period(self, period):
-        view_period_map = {ord('0'): 'days', ord('1'): 'workweek', ord('2'): 'week', ord('3'): 'month'}
+        view_period_map = {ord('0'): 'Days', ord('1'): 'Work Week', ord('2'): 'Week', ord('3'): 'Months'}
         xpath = '//*[@id="ctl00_ContentPlaceHolder_Content_ctl00_Body_ec_Body_esb_cbpS_cbZeitraum_'
         self.__switch_to_iframe()
         self.__wait_wrapper(xpath + 'B-1"]')
-        self.__wait_wrapper(xpath + 'DDD_L_LBI#T0"]'.replace('#', str(period)))
+        self.__wait_wrapper('/html/body/form/div[3]/div/div[2]/div[1]/table/tbody/tr/td/table/tbody/tr/td[4]/table/tbody/tr/td[2]/div[2]/div/div/div/table/tbody/tr/td/div/div/table[2]/tr[#]/td'.replace('#', str(int(period)+1)))
         self.__switch_from_iframe()
         logging.info('Successfully set view period to ' + str(period).translate(view_period_map))
 
+    def show_next_period(self):
+        self.__switch_to_iframe()
+        self.__wait_wrapper('/html/body/form/div[3]/div/div[2]/div[1]/table/tbody/tr/td/table/tbody/tr/td[1]/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr/td[3]/div')
+        time.sleep(3)
+        self.__switch_from_iframe()
+        logging.info('Successfully showed next period')    
+    
     def extract_timetable(self):
         self.__switch_to_iframe()
         element = self.browser.find_element_by_xpath(
             '//*[@id="ctl00_ContentPlaceHolder_Content_ctl00_Body_ec_Body_esb_cbpS_sdrUebersicht_containerBlock_content"]')
         html = bs(element.get_attribute('innerHTML'), features="html.parser").prettify()
-        with open(self.__dir + ".config/tmp.html", "w") as html_file:
+        with open(self.__dir + ".config/tmp.html", "a") as html_file:
             html_file.write(html)
         self.__switch_from_iframe()
         logging.info('Successfully saved html table to tmp.html file')
