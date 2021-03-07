@@ -132,5 +132,4 @@ dmypy.json
 .idea/
 
 # data stuff
-.config/data.json
-.config/tmp.html
+.config/
